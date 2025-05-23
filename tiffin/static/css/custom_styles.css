@@ -1,0 +1,17 @@
+/* static/css/custom_styles.css */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa; /* Light gray background */
+}
+
+.navbar-brand svg { /* Style for the SVG icon in navbar */
+    color: #ffc107; /* A nice yellow/orange for food theme */
+}
+
+.card {
+    border: none; /* Cleaner look */
+}
+
+.card-title {
+    color: #343a40; /* Darker text for titles */
+}

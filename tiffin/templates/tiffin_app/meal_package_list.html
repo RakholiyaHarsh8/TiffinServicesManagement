@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ page_title }} - Tiffin Services{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <header class="pb-3 mb-4 border-bottom">
+        <h1 class="mb-3 h2 text-center">{{ page_title }}</h1>
+    </header>
+
+    <div class="row mb-4 justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <form method="get" action="{% url 'tiffin_app:list_meal_packages' %}" class="p-3 bg-light border rounded">
+                <div class="input-group">
+                    <label for="location_filter_select" class="input-group-text">Select Location</label>
+                    <select name="location_filter" id="location_filter_select" class="form-select">
+                        <option value="">All Locations</option>
+                        {% for location in available_locations %}
+                            <option value="{{ location }}" {% if location == current_filter %}selected{% endif %}>
+                                {{ location }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                    {% if current_filter %}
+                        <a href="{% url 'tiffin_app:list_meal_packages' %}" class="btn btn-outline-secondary ms-2">Clear Filter</a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for package in meal_packages %}
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                {% if package.image %}
+                    <img src="{{ package.image.url }}" class="card-img-top card-img-top-custom" alt="{{ package.package_name }}">
+                {% else %}
+                    <img src="{% static 'images/default_meal.png' %}" class="card-img-top card-img-top-custom" alt="Default Meal Image">
+                {% endif %}
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">{{ package.package_name }}</h5>
+                    <p class="card-text text-muted small mb-1">
+                        Provider: <strong>{{ package.tiffin_service_provider.name }}</strong>
+                    </p>
+                    <p class="card-text flex-grow-1">{{ package.description|truncatewords:20 }}</p>
+                    <ul class="list-group list-group-flush mt-auto">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Price:
+                            <span class="badge bg-success rounded-pill">₹{{ package.price }} ({{ package.get_duration_display }})</span>
+                        </li>
+                        <li class="list-group-item"><strong>Meal Type:</strong> {{ package.get_meal_type_display }}</li>
+                        <li class="list-group-item"><strong>Serves In:</strong> {{ package.service_area_city }}</li>
+                        <li class="list-group-item">
+                            <strong>Provider Contact:</strong> {{ package.tiffin_service_provider.contact_number }}
+                            <br>
+                            <small class="provider-info">Email: {{ package.tiffin_service_provider.email }}</small>
+                        </li>
+                        <li class="list-group-item">
+                            <small class="provider-info">Meal Offerings: {{ package.tiffin_service_provider.get_meal_type_offered_display }}</small><br>
+                            <small class="provider-info">Delivery: {{ package.tiffin_service_provider.delivery_options|truncatewords:10 }}</small>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-footer bg-transparent border-top-0 text-center">
+                    <small class="text-muted">Last updated: {{ package.updated_at|timesince }} ago</small>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info text-center" role="alert">
+                <h4 class="alert-heading">No Tiffin Packages Found!</h4>
+                <p>
+                    No tiffin packages are currently available matching your criteria.
+                    {% if current_filter %}
+                        Try clearing the filter or selecting a different location.
+                    {% else %}
+                        Please check back later or contact admin to add new packages.
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
